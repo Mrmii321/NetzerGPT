@@ -33,7 +33,7 @@ class EventHandler(AssistantEventHandler):
         Args:
             text (str): The text created by the assistant.
         """
-        print(f"\nassistant > ", end="", flush=True)
+        print(f"\nassistant > ", end="\n", flush=True)
 
     @override
     def on_text_delta(self, delta, snapshot):
