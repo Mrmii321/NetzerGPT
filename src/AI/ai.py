@@ -68,7 +68,7 @@ class Main:
         """
         api_key = os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
-        self.model = "gpt-4o"  # Corrected model name
+        self.model = "ft:gpt-4o-2024-08-06:personal:netzergpt:AIs8J7vW"  # Corrected model name
 
         # Load configuration
         with open(r"C:\Users\noahf\OneDrive\Desktop\Development\Python\NetzerGPT\config.json", "r") as file:
@@ -80,17 +80,6 @@ class Main:
         # Create a new thread (conversation)
         self.thread = self.client.beta.threads.create()
 
-    def set_model(self, model: str):
-        """
-        Updates the model used by the AI.
-        
-        Args:
-            model (str): The new model identifier to set.
-        """
-        self.model = model
-
-    
-    import json
 
     def process_response(self, response):
         """
@@ -129,6 +118,10 @@ class Main:
                 # Handle file_path annotations if file_citation is not present
                 source_text = f'Referenced from file at {file_path}'
                 message_content = message_content.replace(annotation.text, source_text)
+            
+            else:
+                # If there is no valid citation information, remove weird characters
+                message_content = message_content.replace(annotation.text, "")
 
         return message_content
 
