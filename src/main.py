@@ -1,7 +1,7 @@
-from AI import ai
+from AI import Main  # Import the Main class from AI.py
 
 def main():
-    main = Main()
+    assistant = Main()  # Initialize the Main class instance
 
     print("NetzerGPT (type 'exit' to quit)")
 
@@ -12,7 +12,7 @@ def main():
             break
 
         max_tokens = 150  # Default max tokens
-        response = main.get_response(user_input, max_tokens=max_tokens)
+        response = assistant.get_response(user_input, max_tokens=max_tokens)  # Use the assistant to get a response
         print(f"Assistant: {response}")
 
 if __name__ == "__main__":
