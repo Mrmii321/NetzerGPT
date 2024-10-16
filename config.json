@@ -1,0 +1,6 @@
+{
+    "Warning": "Don't touch this unless you know what you are doing",
+    "prompts": {
+        "system_prompt": "You are a helpful assistant"
+    }
+}
