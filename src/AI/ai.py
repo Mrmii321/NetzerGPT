@@ -93,6 +93,25 @@ class Main:
     import json
 
     def process_response(self, response):
+        """
+        Processes the assistant's response to replace annotations with inline source citations.
+
+        This method extracts the content of the response and iterates over any annotations that provide
+        citations. It replaces the annotated text with either the quoted text from the file or a reference
+        to the file path, avoiding the use of special characters or placeholder citation formats.
+
+        Args:
+            response (object): The response object from the assistant that includes text content and annotations.
+
+        Returns:
+            tuple: 
+                - message_content (str): The assistant's response with inline citations replacing annotations.
+                - citations (list): A list of citations extracted from the annotations (if any).
+        
+        Example:
+            If the response contains annotated text that refers to a quote from a file, the method will replace
+            the annotated text with the actual quote and file name, e.g., "The sky is blue from source_file.txt".
+        """
         # Extract the message content
         message_content = response.content[0].text
         annotations = response.annotations
@@ -112,6 +131,7 @@ class Main:
                 message_content = message_content.replace(annotation.text, source_text)
 
         return message_content
+
 
 
     def get_response(self, message: str, max_tokens: int = 150) -> str:
