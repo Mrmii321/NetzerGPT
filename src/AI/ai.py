@@ -89,17 +89,41 @@ class Main:
         """
         self.model = model
 
+    
+    import json
+
+    def process_response(self, response):
+        # Extract the message content
+        message_content = response.content[0].text
+        annotations = response.annotations
+        citations = []
+
+        # Iterate over the annotations and replace them with inline citations
+        for index, annotation in enumerate(annotations):
+            # Inject the actual source text instead of using weird characters
+            if (file_citation := getattr(annotation, 'file_citation', None)):
+                cited_file = self.client.files.retrieve(file_citation.file_id)
+                source_text = f'{file_citation.quote} from {cited_file.filename}'
+                message_content = message_content.replace(annotation.text, source_text)
+
+            elif (file_path := getattr(annotation, 'file_path', None)):
+                # Handle file_path annotations if file_citation is not present
+                source_text = f'Referenced from file at {file_path}'
+                message_content = message_content.replace(annotation.text, source_text)
+
+        return message_content
+
+
     def get_response(self, message: str, max_tokens: int = 150) -> str:
         """
         Generates a response from the AI based on the provided message.
 
         If the message is "/dump", it fetches all messages in the thread.
         Otherwise, it sends the user message to the assistant and streams the response.
-        
+
         Args:
             message (str): The user message to send to the assistant.
             max_tokens (int): The maximum number of tokens for the response (default is 150).
-
         Returns:
             str: The formatted response from the assistant or an error message.
         """
@@ -109,7 +133,6 @@ class Main:
                 messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)
                 formatted_response = json.dumps([msg.to_dict() for msg in messages], indent=2)
             else:
-                # Add user message to the thread
                 self.client.beta.threads.messages.create(
                     thread_id=self.thread.id,
                     role="user",
@@ -123,15 +146,19 @@ class Main:
                 with self.client.beta.threads.runs.stream(
                     thread_id=self.thread.id,
                     assistant_id=self.assistant_id,
-                    instructions = ' '.join(self.json_data["prompts"]["system_prompt"]),
+                    instructions=' '.join(self.json_data["prompts"]["system_prompt"]),
                     event_handler=event_handler,
                 ) as stream:
                     stream.until_done()
 
                 # Get the full response from the event_handler
-                formatted_response = event_handler.formatted_response
+                response = event_handler.formatted_response
+
+                # Process the response to handle annotations
+                formatted_response, citations = self.process_response(response)
 
             return formatted_response
 
         except Exception as e:
             return f"An error occurred: {str(e)}"
+
