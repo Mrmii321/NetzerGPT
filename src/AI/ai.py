@@ -123,7 +123,7 @@ class Main:
                 with self.client.beta.threads.runs.stream(
                     thread_id=self.thread.id,
                     assistant_id=self.assistant_id,
-                    instructions=self.json_data["prompts"]["system_prompt"],
+                    instructions = ' '.join(self.json_data["prompts"]["system_prompt"]),
                     event_handler=event_handler,
                 ) as stream:
                     stream.until_done()
