@@ -3,7 +3,7 @@ from AI.ai import Main  # Import the Main class from AI.py
 def main():
     assistant = Main()  # Initialize the Main class instance
 
-    print("NetzerGPT (type 'exit' to quit)\n******")
+    print("NetzerGPT (type 'exit' to quit)\n*******************************")
 
     while True:
         user_input = input("\nYou > \n")
